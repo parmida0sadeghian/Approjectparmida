@@ -2,7 +2,7 @@ import datetime  # برای استفاده از تاریخ
 
 
 class Order:
-    def __init__(self, username, products_in_order):
+    def __init__(self, username, products_in_order, order_id=None):  # order_id اضافه شد
         # سازنده: مشخصات یک سفارش را هنگام ایجاد آن تنظیم می‌کند.
         # یک سفارش می‌تواند شامل چندین محصول باشد.
 
@@ -20,6 +20,8 @@ class Order:
         self.order_date = datetime.date.today()
         # تاریخ ثبت سفارش (به صورت خودکار تاریخ امروز را قرار می‌دهد).
 
+        self.order_id = order_id if order_id is not None else self._generate_unique_order_id()  # اختصاص یا تولید
+
     def _calculate_total_price(self):
         # متد داخلی برای محاسبه قیمت کل سفارش.
         # این متد تمام اقلام سفارش را جمع می‌کند.
@@ -30,6 +32,11 @@ class Order:
             price = item.get('price', 0)  # اگر 'price' نباشد، 0 در نظر گرفته می‌شود.
             calculated_total += quantity * price
         return calculated_total
+
+    def _generate_unique_order_id(self):
+        # در یک برنامه واقعی، این از یک روش قوی‌تر برای تولید ID استفاده می‌کند
+        # مانند UUID یا یک شمارنده پایدار. برای سادگی، فعلاً از رویکرد مبتنی بر زمان استفاده می‌کنیم.
+        return f"ORD-{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}"
 
     def get_username(self):
         # متدی برای دریافت نام کاربری خریدار سفارش.
@@ -47,8 +54,12 @@ class Order:
         # متدی برای دریافت تاریخ ثبت سفارش.
         return self.order_date
 
+    def get_order_id(self):  # متد جدید برای دریافت order_id
+        return self.order_id
+
     def display_order_info(self):
         # نمایش جزئیات کامل سفارش.
+        print(f"سفارش ID: {self.order_id}")  # نمایش ID سفارش
         print(f"سفارش برای کاربر: {self.username}")
         print(f"تاریخ سفارش: {self.order_date}")
         print("محصولات سفارش داده شده:")
@@ -60,6 +71,4 @@ class Order:
         print(f"قیمت کل سفارش: {self.total_price} تومان")
 
     def __str__(self):
-        # نمایش شیء سفارش به صورت رشته‌ای خوانا.
-        return f"Order(username='{self.username}', total_price={self.total_price}, date={self.order_date})"
-
+        return f"Order(id='{self.order_id}', username='{self.username}', total_price={self.total_price}, date={self.order_date})"
